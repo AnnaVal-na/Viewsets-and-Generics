@@ -5,15 +5,15 @@ from dotenv import load_dotenv
 # Загружаем переменные окружения из .env
 load_dotenv()
 
-# Путь к корню проекта (например, папка Viewsets-and-Generics)
+# Путь к корню проекта
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Безопасность
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-very-secret-key-for-dev-only')  # Установи нормальный ключ в .env!
-DEBUG = True  # В продакшене обязательно поставь False
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-very-secret-key-for-dev-only')
+DEBUG = True
 
 # Разрешённые хосты
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']  # Добавь домены, если нужно
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 # Приложения
 INSTALLED_APPS = [
@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Третьесторонние
-    'rest_framework',  # Django REST Framework
+    'rest_framework',
 
     # Локальные приложения
     'users',
@@ -44,13 +44,13 @@ MIDDLEWARE = [
 ]
 
 # URL-конфигурация
-ROOT_URLCONF = 'myproject.urls'  # ← Убедись, что имя проекта правильное (например, myproject)
+ROOT_URLCONF = 'myproject.urls'
 
 # Шаблоны
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  # Можно добавить пути, например [BASE_DIR / 'templates']
+        'DIRS': [],  # Можно добавить [BASE_DIR / 'templates'] при необходимости
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -64,7 +64,7 @@ TEMPLATES = [
 ]
 
 # WSGI
-WSGI_APPLICATION = 'myproject.wsgi.application'  # ← Проверь имя проекта
+WSGI_APPLICATION = 'myproject.wsgi.application'
 
 # База данных — PostgreSQL
 DATABASES = {
@@ -74,7 +74,7 @@ DATABASES = {
         "USER": os.getenv("DB_USER"),
         "PASSWORD": os.getenv("DB_PASSWORD"),
         "HOST": os.getenv("DB_HOST", "localhost"),
-        "PORT": int(os.getenv("DB_PORT", 5432)),
+        "PORT": int(os.getenv("DB_PORT", 5432)),  # Порт должен быть int
     }
 }
 
@@ -96,25 +96,25 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Локализация
 LANGUAGE_CODE = 'ru-ru'
-TIME_ZONE = 'Europe/Moscow'  # или 'UTC', как у тебя
+TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 USE_TZ = True
 
 # Статические файлы
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Для collectstatic в продакшене
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Для collectstatic (например, в продакшене)
 STATICFILES_DIRS = [
-    BASE_DIR / "static",  # Локальные статические файлы
+    BASE_DIR / "static",  # Локальные статические файлы (если есть)
 ]
 
-# Медиа-файлы (аватарки и т.д.)
+# Медиа-файлы
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Кастомная модель пользователя
 AUTH_USER_MODEL = 'users.CustomUser'
 
-# Настройки Django REST Framework
+# Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
@@ -125,8 +125,8 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Email (для разработки — в консоль)
+# Email (вывод в консоль — для разработки)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# Дефолтный авто-филд
+# Авто-поле по умолчанию
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
