@@ -30,6 +30,9 @@ INSTALLED_APPS = [
     # Локальные приложения
     'users',
     'courses',
+
+    # Фильтрация
+    'django_filters',
 ]
 
 # Middleware
