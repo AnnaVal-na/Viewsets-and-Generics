@@ -27,19 +27,33 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractUser):
-    # Полностью удаляем поле username
     username = None
-
-    # Делаем email уникальным и используем для авторизации
     email = models.EmailField(_('email address'), unique=True)
     phone = models.CharField(max_length=15, blank=True, null=True, verbose_name='Телефон')
     city = models.CharField(max_length=100, blank=True, null=True, verbose_name='Город')
     avatar = models.ImageField(upload_to='users/avatars/', blank=True, null=True, verbose_name='Аватар')
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []  # Пустой список, так как username больше нет
+    REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
+
+    groups = models.ManyToManyField(
+        'auth.Group',
+        verbose_name='groups',
+        blank=True,
+        help_text='The groups this user belongs to.',
+        related_name='customuser_set',  # Уникальный related_name
+        related_query_name='user',
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        verbose_name='user permissions',
+        blank=True,
+        help_text='Specific permissions for this user.',
+        related_name='customuser_set',
+        related_query_name='user',
+    )
 
     def __str__(self):
         return self.email
