@@ -4,15 +4,18 @@ from .models import CustomUser, Payment
 from django.utils.translation import gettext_lazy as _
 
 
-
+@admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
-    # Убираем username из отображения
+    """
+    Админ-панель для кастомного пользователя.
+    Убран username, добавлены phone, city, avatar.
+    """
     list_display = ('email', 'first_name', 'last_name', 'phone', 'city', 'is_staff', 'is_active')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups')
     search_fields = ('email', 'first_name', 'last_name', 'phone', 'city')
     ordering = ('email',)
 
-    # Поля в форме редактирования
+    # Поля при редактировании
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'phone', 'city', 'avatar')}),
@@ -22,7 +25,7 @@ class CustomUserAdmin(UserAdmin):
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
 
-    # Поля при создании нового пользователя
+    # Поля при создании
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
@@ -30,17 +33,12 @@ class CustomUserAdmin(UserAdmin):
         }),
     )
 
-    # Поиск
-    search_fields = ('email', 'first_name', 'last_name', 'phone', 'city')
 
-
-# Регистрируем CustomUser с кастомным админом
-admin.site.register(CustomUser, CustomUserAdmin)
-
-
-# Админка для Payment
 @admin.register(Payment)
 class PaymentAdmin(admin.ModelAdmin):
+    """
+    Админ-панель для платежей.
+    """
     list_display = ['user', 'amount', 'payment_method', 'paid_course', 'paid_lesson', 'payment_date']
     list_filter = ['payment_method', 'payment_date', 'paid_course', 'paid_lesson']
     search_fields = ['user__email', 'user__first_name', 'user__last_name']
