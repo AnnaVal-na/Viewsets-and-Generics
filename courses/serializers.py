@@ -1,14 +1,13 @@
 from rest_framework import serializers
 from .models import Course, Lesson
 
-
 class LessonSerializer(serializers.ModelSerializer):
     """
     Сериализатор для урока.
     """
     class Meta:
         model = Lesson
-        fields = ['id', 'title', 'description', 'video_url']
+        fields = '__all__'  # Исправлено: включаем ВСЕ поля, включая course и owner
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -29,6 +28,7 @@ class CourseSerializer(serializers.ModelSerializer):
             'owner',
             'lessons_count',
             'lessons',
+            'created_at',  # Добавлено для сортировки
         ]
 
     def get_lessons_count(self, obj):

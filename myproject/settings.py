@@ -26,13 +26,11 @@ INSTALLED_APPS = [
 
     # Третьесторонние
     'rest_framework',
+    'django_filters',  # Для фильтрации
 
     # Локальные приложения
     'users',
     'courses',
-
-    # Фильтрация
-    'django_filters',
 ]
 
 # Middleware
@@ -53,7 +51,7 @@ ROOT_URLCONF = 'myproject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  # Можно добавить [BASE_DIR / 'templates'] при необходимости
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,7 +75,7 @@ DATABASES = {
         "USER": os.getenv("DB_USER"),
         "PASSWORD": os.getenv("DB_PASSWORD"),
         "HOST": os.getenv("DB_HOST", "localhost"),
-        "PORT": int(os.getenv("DB_PORT", 5432)),  # Порт должен быть int
+        "PORT": int(os.getenv("DB_PORT", 5432)),
     }
 }
 
@@ -105,9 +103,9 @@ USE_TZ = True
 
 # Статические файлы
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Для collectstatic (например, в продакшене)
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
-    BASE_DIR / "static",  # Локальные статические файлы (если есть)
+    BASE_DIR / "static",
 ]
 
 # Медиа-файлы
@@ -117,7 +115,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Кастомная модель пользователя
 AUTH_USER_MODEL = 'users.CustomUser'
 
-# Django REST Framework
+# Django REST Framework - ИСПРАВЛЕНО: добавлена сортировка
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
@@ -126,9 +124,13 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.OrderingFilter',  # ДОБАВЛЕНО: сортировка
+    ],
 }
 
-# Email (вывод в консоль — для разработки)
+# Email
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Авто-поле по умолчанию
