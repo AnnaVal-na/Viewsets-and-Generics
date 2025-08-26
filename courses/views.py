@@ -1,24 +1,21 @@
 from rest_framework import viewsets
-from .models import Course, Lesson
-from .serializers import CourseSerializer, LessonSerializer
+from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from courses.models import Course, Lesson
+from courses.serializers import CourseSerializer, LessonSerializer
 
 
 class CourseViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet для управления курсами:
-    GET /api/courses/ — список
-    POST /api/courses/ — создание
-    GET /api/courses/1/ — детали
-    PUT/PATCH /api/courses/1/ — редактирование
-    DELETE /api/courses/1/ — удаление
-    """
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ['title', 'description']
+    ordering_fields = ['created_at', 'title']
 
 
 class LessonViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet для управления уроками (аналогично курсам)
-    """
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ['title', 'description', 'course']
+    ordering_fields = ['created_at', 'title']
