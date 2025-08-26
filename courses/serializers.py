@@ -28,7 +28,6 @@ class CourseSerializer(serializers.ModelSerializer):
             'owner',
             'lessons_count',
             'lessons',
-            'created_at',  # Добавлено для сортировки
         ]
 
     def get_lessons_count(self, obj):

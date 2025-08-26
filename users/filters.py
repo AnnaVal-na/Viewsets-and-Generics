@@ -1,12 +1,13 @@
-import django_filters
-from .models import Payment
+from django_filters import rest_framework as filters
+from users.models import Payment
 
 
-class PaymentFilter(django_filters.FilterSet):
-    course = django_filters.NumberFilter(field_name="paid_course__id")
-    lesson = django_filters.NumberFilter(field_name="paid_lesson__id")
-    payment_method = django_filters.CharFilter(field_name="payment_method")
-
+class PaymentFilter(filters.FilterSet):
     class Meta:
         model = Payment
-        fields = ['course', 'lesson', 'payment_method']
+        fields = {
+            'paid_course': ['exact'],
+            'paid_lesson': ['exact'],
+            'payment_method': ['exact'],
+            'payment_date': ['gte', 'lte'],
+        }
