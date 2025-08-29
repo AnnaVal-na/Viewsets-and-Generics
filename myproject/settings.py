@@ -27,6 +27,7 @@ INSTALLED_APPS = [
 
     # Третьесторонние
     'rest_framework',
+    'rest_framework_simplejwt',
     'django_filters',  # Для фильтрации
 
     # Локальные приложения
