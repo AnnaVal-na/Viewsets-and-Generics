@@ -11,6 +11,7 @@ class IsModerator(permissions.BasePermission):
             return True
         return False
 
+
     def has_object_permission(self, request, view, obj):
         return request.user.groups.filter(name='moderators').exists()
 
@@ -18,6 +19,16 @@ class IsModerator(permissions.BasePermission):
 class IsOwner(permissions.BasePermission):
     """
     Права для владельцев объектов: могут работать только со своими объектами
+    Разрешены методы: GET, PUT, PATCH, DELETE (но не CREATE)
     """
+    def has_permission(self, request, view):
+        # Владелец может выполнять любые действия кроме создания (create)
+        # CREATE обрабатывается отдельно через perform_create
+        return request.user.is_authenticated
+
+
     def has_object_permission(self, request, view, obj):
-        return obj.owner == request.user
+        # Явная проверка методов: разрешены GET, PUT, PATCH, DELETE
+        if request.method in permissions.SAFE_METHODS + ('PUT', 'PATCH', 'DELETE'):
+            return obj.owner == request.user
+        return False
