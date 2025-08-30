@@ -9,7 +9,10 @@ from django.shortcuts import get_object_or_404
 from .models import Course, Lesson, Subscription
 from .serializers import CourseSerializer, LessonSerializer
 from .paginators import CourseLessonPagination
-from users.permissions import IsOwner  # Убедитесь, что этот файл существует
+from users.permissions import IsOwner
+
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -22,18 +25,12 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['create']:
-            # Создавать могут только аутентифицированные пользователи (не staff)
             self.permission_classes = [permissions.IsAuthenticated, ~permissions.IsAdminUser]
         elif self.action in ['destroy']:
-            # Удалять могут только владельцы и админы (не staff)
-            self.permission_classes = [permissions.IsAuthenticated, ~permissions.IsAdminUser,
-                                       IsOwner | permissions.IsAdminUser]
+            self.permission_classes = [permissions.IsAuthenticated, ~permissions.IsAdminUser, IsOwner | permissions.IsAdminUser]
         elif self.action in ['update', 'partial_update']:
-            # Редактировать могут staff, админы и владельцы
-            self.permission_classes = [permissions.IsAuthenticated,
-                                       permissions.IsAdminUser | permissions.IsAdminUser | IsOwner]
+            self.permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser | IsOwner]
         else:
-            # Просматривать могут все авторизованные
             self.permission_classes = [permissions.IsAuthenticated]
         return [permission() for permission in self.permission_classes]
 
@@ -53,11 +50,9 @@ class LessonViewSet(viewsets.ModelViewSet):
         if self.action in ['create']:
             self.permission_classes = [permissions.IsAuthenticated, ~permissions.IsAdminUser]
         elif self.action in ['destroy']:
-            self.permission_classes = [permissions.IsAuthenticated, ~permissions.IsAdminUser,
-                                       IsOwner | permissions.IsAdminUser]
+            self.permission_classes = [permissions.IsAuthenticated, ~permissions.IsAdminUser, IsOwner | permissions.IsAdminUser]
         elif self.action in ['update', 'partial_update']:
-            self.permission_classes = [permissions.IsAuthenticated,
-                                       permissions.IsAdminUser | permissions.IsAdminUser | IsOwner]
+            self.permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser | IsOwner]
         else:
             self.permission_classes = [permissions.IsAuthenticated]
         return [permission() for permission in self.permission_classes]
@@ -72,6 +67,32 @@ class SubscriptionAPIView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Управление подпиской на курс",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'course_id': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description='ID курса для подписки/отписки'
+                )
+            },
+            required=['course_id']
+        ),
+        responses={
+            200: openapi.Response(
+                description="Успешная операция",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'message': openapi.Schema(type=openapi.TYPE_STRING)
+                    }
+                )
+            ),
+            400: openapi.Response(description="Ошибка валидации"),
+            404: openapi.Response(description="Курс не найден")
+        }
+    )
     def post(self, request, *args, **kwargs):
         user = request.user
         course_id = request.data.get('course_id')

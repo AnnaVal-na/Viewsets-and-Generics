@@ -69,19 +69,37 @@ class Payment(models.Model):
     PAYMENT_METHOD_CHOICES = [
         ('cash', 'Наличные'),
         ('transfer', 'Перевод на счёт'),
+        ('stripe', 'Stripe'),
+    ]
+
+    PAYMENT_STATUS_CHOICES = [
+        ('pending', 'Ожидает оплаты'),
+        ('paid', 'Оплачено'),
+        ('failed', 'Ошибка оплаты'),
     ]
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name="Пользователь")
     payment_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата оплаты")
-    paid_course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Оплаченный курс")
-    paid_lesson = models.ForeignKey(Lesson, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Оплаченный урок")
+    paid_course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, blank=True,
+                                    verbose_name="Оплаченный курс")
+    paid_lesson = models.ForeignKey(Lesson, on_delete=models.SET_NULL, null=True, blank=True,
+                                    verbose_name="Оплаченный урок")
     amount = models.PositiveIntegerField(verbose_name="Сумма оплаты")
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, verbose_name="Способ оплаты")
+
+    # Новые поля для Stripe
+    stripe_product_id = models.CharField(max_length=100, blank=True, null=True, verbose_name="Stripe Product ID")
+    stripe_price_id = models.CharField(max_length=100, blank=True, null=True, verbose_name="Stripe Price ID")
+    stripe_session_id = models.CharField(max_length=100, blank=True, null=True, verbose_name="Stripe Session ID")
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending',
+                                      verbose_name="Статус оплаты")
+    payment_url = models.URLField(blank=True, null=True, verbose_name="Ссылка для оплаты")
 
     class Meta:
         verbose_name = "Платёж"
         verbose_name_plural = "Платежи"
         ordering = ['-payment_date']
+
 
     def __str__(self):
         return f"{self.user.email} — {self.amount} руб. ({self.get_payment_method_display()})"

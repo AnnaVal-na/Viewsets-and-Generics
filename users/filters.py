@@ -1,6 +1,5 @@
 from django_filters import rest_framework as filters
-from users.models import Payment
-
+from .models import Payment
 
 class PaymentFilter(filters.FilterSet):
     class Meta:
@@ -9,5 +8,5 @@ class PaymentFilter(filters.FilterSet):
             'paid_course': ['exact'],
             'paid_lesson': ['exact'],
             'payment_method': ['exact'],
-            'payment_date': ['gte', 'lte'],
+            'amount': ['exact', 'gte', 'lte'],
         }
