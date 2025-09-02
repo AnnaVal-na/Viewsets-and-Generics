@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     # Локальные приложения
     'users',
     'courses',
+    'drf_yasg',
 ]
 
 # Middleware
@@ -139,3 +140,23 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
+
+# Настройки Swagger
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    },
+    'USE_SESSION_AUTH': False,
+}
+
+# Настройки Redoc
+REDOC_SETTINGS = {
+    'LAZY_RENDERING': False,
+}
+
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
