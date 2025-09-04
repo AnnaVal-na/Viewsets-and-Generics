@@ -119,19 +119,19 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Кастомная модель пользователя
 AUTH_USER_MODEL = 'users.CustomUser'
 
-# Django REST Framework - ИСПРАВЛЕНО: добавлена сортировка
+# Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',  # Добавить
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',  # Оставить
+        'rest_framework.permissions.IsAuthenticated',
     ],
 }
 
-# Email
+# Email (для консоли)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Авто-поле по умолчанию
@@ -162,7 +162,6 @@ REDOC_SETTINGS = {
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 
-
 # Celery Configuration
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
@@ -170,12 +169,14 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Moscow'
 
-
-# Email settings (для рассылки писем)
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# Email settings для рассылки писем (если понадобится)
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@yourdomain.com')
+
+# Администратор для уведомлений
+ADMINS = [('Admin', 'admin@example.com')]
+ADMIN_EMAIL = 'admin@example.com'
