@@ -14,6 +14,8 @@ from users.permissions import IsOwner
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+from .tasks import send_course_update_email
+
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
@@ -27,7 +29,8 @@ class CourseViewSet(viewsets.ModelViewSet):
         if self.action in ['create']:
             self.permission_classes = [permissions.IsAuthenticated, ~permissions.IsAdminUser]
         elif self.action in ['destroy']:
-            self.permission_classes = [permissions.IsAuthenticated, ~permissions.IsAdminUser, IsOwner | permissions.IsAdminUser]
+            self.permission_classes = [permissions.IsAuthenticated, ~permissions.IsAdminUser,
+                                       IsOwner | permissions.IsAdminUser]
         elif self.action in ['update', 'partial_update']:
             self.permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser | IsOwner]
         else:
@@ -36,6 +39,32 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+
+        # Отправляем задачу на рассылку писем
+        if response.status_code == 200:
+            course = self.get_object()
+            update_message = f"Курс был обновлен. Изменения: {request.data}"
+
+            # Асинхронная отправка писем
+            send_course_update_email.delay(course.id, update_message)
+
+        return response
+
+    def partial_update(self, request, *args, **kwargs):
+        response = super().partial_update(request, *args, **kwargs)
+
+        # Отправляем задачу на рассылку писем
+        if response.status_code == 200:
+            course = self.get_object()
+            update_message = f"Курс был частично обновлен. Изменения: {request.data}"
+
+            # Асинхронная отправка писем
+            send_course_update_email.delay(course.id, update_message)
+
+        return response
 
 
 class LessonViewSet(viewsets.ModelViewSet):
@@ -50,7 +79,8 @@ class LessonViewSet(viewsets.ModelViewSet):
         if self.action in ['create']:
             self.permission_classes = [permissions.IsAuthenticated, ~permissions.IsAdminUser]
         elif self.action in ['destroy']:
-            self.permission_classes = [permissions.IsAuthenticated, ~permissions.IsAdminUser, IsOwner | permissions.IsAdminUser]
+            self.permission_classes = [permissions.IsAuthenticated, ~permissions.IsAdminUser,
+                                       IsOwner | permissions.IsAdminUser]
         elif self.action in ['update', 'partial_update']:
             self.permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser | IsOwner]
         else:
