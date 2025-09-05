@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 from courses.models import Course, Lesson
+from django.utils import timezone
 
 
 class CustomUserManager(BaseUserManager):
@@ -25,7 +26,6 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError(_('Superuser must have is_superuser=True.'))
         return self.create_user(email, password, **extra_fields)
-
 
 class CustomUser(AbstractUser):
     username = None
@@ -59,10 +59,15 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.email
 
+    def is_inactive_for_month(self):
+        """Проверяет, неактивен ли пользователь более месяца"""
+        if not self.last_login:
+            return True  # Никогда не логинился
+        return (timezone.now() - self.last_login).days > 30
+
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-
 
 # МОДЕЛЬ ПЛАТЕЖА
 class Payment(models.Model):
@@ -99,7 +104,6 @@ class Payment(models.Model):
         verbose_name = "Платёж"
         verbose_name_plural = "Платежи"
         ordering = ['-payment_date']
-
 
     def __str__(self):
         return f"{self.user.email} — {self.amount} руб. ({self.get_payment_method_display()})"
