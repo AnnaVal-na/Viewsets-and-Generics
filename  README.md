@@ -147,3 +147,27 @@ GET /redoc/                     - Документация Redoc
 - permissions.py: кастомные permissions
 - myproject/: настройки проекта
 - requirements.txt: зависимости
+
+## Запуск через Docker Compose
+
+### 1. Клонирование и настройка
+```bash
+git clone <your-repo-url>
+cd Viewsets-and-Generics
+cp .env.example .env
+
+## Проверка работоспособности:
+
+1. Django: http://localhost:8000
+2. База данных: 
+   ```bash
+   docker-compose exec db psql -U postgres -d viewsets_generics_db
+
+Redis:
+bash
+docker-compose exec redis redis-cli ping
+Celery:
+
+bash
+docker-compose logs celery
+text
