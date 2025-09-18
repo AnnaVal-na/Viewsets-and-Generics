@@ -182,6 +182,8 @@ text
 - Nginx
 - Gunicorn
 
+### 
+CI_CD_GitHub_Actions
 ### Настройка сервера:
 
 1. Подключитесь к серверу по SSH
