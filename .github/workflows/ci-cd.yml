@@ -61,9 +61,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/CI-CD-Final-Deployment_1'
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Deploy to server
       uses: appleboy/ssh-action@master
       with:
@@ -72,7 +75,8 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd /var/www/myapp
-          git pull origin CI-CD-Final-Deployment_1
+          git fetch --all
+          git reset --hard origin/develop
           source venv/bin/activate
           pip install -r requirements.txt
           python manage.py migrate
