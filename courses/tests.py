@@ -174,6 +174,8 @@ class SubscriptionTestCase(APITestCase):
 
     def test_subscription_unique(self):
         """Тестируем уникальность подписки"""
+        self.client.force_authenticate(user=self.user)
+
         url = reverse('subscribe')
         data = {'course_id': self.course.id}
 
