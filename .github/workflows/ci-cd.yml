@@ -19,23 +19,34 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install and start PostgreSQL
+      - name: Install and configure PostgreSQL
         run: |
+          # Устанавливаем PostgreSQL
           sudo apt-get update
           sudo apt-get install -y postgresql postgresql-contrib
           
           # Запускаем PostgreSQL
           sudo service postgresql start
           
+          # Ждем пока PostgreSQL полностью запустится
+          echo "Waiting for PostgreSQL to start..."
+          for i in {1..10}; do
+            if sudo service postgresql status | grep -q "online"; then
+              echo "PostgreSQL is running!"
+              break
+            fi
+            echo "Attempt $i/10: PostgreSQL starting..."
+            sleep 3
+          done
+          
           # Создаем пользователя и базу данных
           sudo -u postgres psql -c "CREATE USER test_user WITH PASSWORD 'test_password';"
           sudo -u postgres psql -c "CREATE DATABASE test_db WITH OWNER test_user;"
           sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE test_db TO test_user;"
           
-          # Проверяем что PostgreSQL запущен
-          pg_isready -h localhost -p 5432 -U test_user
-        env:
-          PGPASSWORD: test_password
+          # Проверяем подключение
+          PGPASSWORD='test_password' pg_isready -h localhost -p 5432 -U test_user -d test_db
+          echo "PostgreSQL is ready for connections!"
 
       - name: Install dependencies
         run: |
@@ -52,7 +63,7 @@ jobs:
           SECRET_KEY: test_secret_key_123
           DEBUG: False
         run: |
-          python manage.py test --noinput
+          python manage.py test --noinput --verbosity=2
 
   deploy:
     runs-on: ubuntu-latest
