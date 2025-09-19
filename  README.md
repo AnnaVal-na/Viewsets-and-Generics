@@ -204,3 +204,5 @@ GRANT ALL PRIVILEGES ON DATABASE myapp_db TO myapp_user;
 ```bash
 sudo apt update
 sudo apt install nginx postgresql python3-pip
+
+http://89.169.172.245/ 
