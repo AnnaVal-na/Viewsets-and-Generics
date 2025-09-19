@@ -79,7 +79,7 @@ class PaymentAPITest(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    @skip("Temporarily skip - fix payment creation later")  # ← ПРАВИЛЬНОЕ применение
+    @skip("Temporarily skip - fix payment creation later")  
     def test_payment_creation(self):
         """Тест создания платежа"""
         url = reverse('payment-create')

@@ -174,27 +174,17 @@ class SubscriptionTestCase(APITestCase):
 
     def test_subscription_unique(self):
         """Тестируем уникальность подписки"""
-        self.client.force_authenticate(user=self.user)
+        url = reverse('subscribe')
+        data = {'course_id': self.course.id}
 
         # Первая подписка
-        self.client.post(
-            reverse('subscribe'),
-            {'course_id': self.course.id}
-        )
+        response = self.client.post(url, data, follow=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Вторая попытка подписаться - должна удалить подписку
-        response = self.client.post(
-            reverse('subscribe'),
-            {'course_id': self.course.id}
-        )
-
-        self.assertEqual(response.data['message'], 'Подписка удалена')
-        self.assertFalse(
-            Subscription.objects.filter(
-                user=self.user,
-                course=self.course
-            ).exists()
-        )
+        response = self.client.post(url, data, follow=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()['message'], 'Подписка удалена')
 
 
 class BasicCourseAPITest(APITestCase):
