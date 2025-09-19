@@ -31,32 +31,39 @@ jobs:
           --health-retries 5
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Python 3.12
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Run all tests
-      env:
-        DB_NAME: test_db
-        DB_USER: test_user
-        DB_PASSWORD: test_password
-        DB_HOST: postgres
-        DB_PORT: 5432
-        REDIS_HOST: redis
-        REDIS_PORT: 6379
-        SECRET_KEY: test_secret_key_123
-        DEBUG: False
-      run: |
-        python manage.py test --noinput
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          echo "Waiting for PostgreSQL to start..."
+          timeout 30s bash -c 'until pg_isready -h postgres -p 5432; do sleep 2; done; echo "PostgreSQL is ready"'
+        env:
+          PGPASSWORD: test_password
+
+      - name: Run all tests
+        env:
+          DB_NAME: test_db
+          DB_USER: test_user
+          DB_PASSWORD: test_password
+          DB_HOST: postgres
+          DB_PORT: 5432
+          REDIS_HOST: redis
+          REDIS_PORT: 6379
+          SECRET_KEY: test_secret_key_123
+          DEBUG: False
+        run: |
+          python manage.py test --noinput
 
   deploy:
     runs-on: ubuntu-latest
