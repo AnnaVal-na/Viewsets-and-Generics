@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ develop, main, CI-CD-Final-Deployment_1 ]
+    branches: [ CI-CD-Final-Deployment_1 ]
   pull_request:
-    branches: [ develop, main ]
+    branches: [ CI-CD-Final-Deployment_1 ]
 
 jobs:
   test:
@@ -34,17 +34,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Python
+    - name: Set up Python 3.12
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
+        python-version: '3.12'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run basic tests
+    - name: Run all tests
       env:
         DB_NAME: test_db
         DB_USER: test_user
@@ -56,14 +56,17 @@ jobs:
         SECRET_KEY: test_secret_key_123
         DEBUG: False
       run: |
-        python manage.py test users.tests --noinput
+        python manage.py test --noinput
 
   deploy:
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/CI-CD-Final-Deployment_1'
+    if: success()
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Deploy to server
       uses: appleboy/ssh-action@master
       with:
@@ -72,7 +75,8 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd /var/www/myapp
-          git pull origin CI-CD-Final-Deployment_1
+          git fetch --all
+          git reset --hard origin/${{ github.ref_name }}
           source venv/bin/activate
           pip install -r requirements.txt
           python manage.py migrate
