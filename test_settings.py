@@ -1,12 +1,21 @@
 from myproject.settings import *
 
-# Используем SQLite для тестов - никаких проблем с правами!
+# Используем SQLite для тестов
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',  # Используем in-memory базу
+        'NAME': ':memory:',
     }
 }
+
+# ОТКЛЮЧАЕМ SSL и HTTPS для тестов
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+SECURE_PROXY_SSL_HEADER = None
+
+# Отключаем редиректы
+APPEND_SLASH = False
 
 # Отключаем кэширование для тестов
 CACHES = {
@@ -15,12 +24,6 @@ CACHES = {
     }
 }
 
-# Отключаем миграции для ускорения тестов
-class DisableMigrations:
-    def __contains__(self, item):
-        return True
-
-    def __getitem__(self, item):
-        return None
-
-MIGRATION_MODULES = DisableMigrations()
+# Создаем папку static
+import os
+os.makedirs('static', exist_ok=True)
