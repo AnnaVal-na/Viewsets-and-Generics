@@ -48,7 +48,7 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SERVER_IP }}
-        username: ${{ secrets.SSH_USER }
+        username: ${{ secrets.SSH_USER }}  # ← ИСПРАВИТЬ ЗДЕСЬ!
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd /var/www/myapp
