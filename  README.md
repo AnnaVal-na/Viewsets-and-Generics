@@ -171,3 +171,34 @@ Celery:
 bash
 docker-compose logs celery
 text
+
+## Деплой на продакшен сервер
+
+### Требования к серверу:
+- Ubuntu 20.04+
+- Python 3.9+
+- PostgreSQL
+- Redis
+- Nginx
+- Gunicorn
+
+### Настройка сервера:
+
+1. Подключитесь к серверу по SSH
+2. Выполните команды настройки:
+```bash
+# Установите необходимые пакеты
+sudo apt update && sudo apt install -y python3-pip python3-venv nginx postgresql redis-server
+
+# Настройте базу данных
+sudo -u postgres psql
+CREATE DATABASE myapp_db;
+CREATE USER myapp_user WITH PASSWORD 'your_password';
+GRANT ALL PRIVILEGES ON DATABASE myapp_db TO myapp_user;
+
+## Server Setup
+
+1. Install dependencies:
+```bash
+sudo apt update
+sudo apt install nginx postgresql python3-pip
