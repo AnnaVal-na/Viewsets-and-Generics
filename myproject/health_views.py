@@ -1,6 +1,8 @@
 from django.http import JsonResponse
 from django.views import View
 from django.db import connection
+from django.utils import timezone
+from django.conf import settings
 from redis import Redis
 from redis.exceptions import ConnectionError as RedisConnectionError
 import logging
@@ -10,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class HealthCheckView(View):
     """
-    Конечная точка проверки работоспособности для Docker и балансировщиков нагрузки
+    Health check endpoint for Docker and load balancers
     """
 
     def get(self, request):
