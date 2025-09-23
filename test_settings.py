@@ -2,9 +2,9 @@ from myproject.settings import *
 
 # Используем SQLite для тестов
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": ":memory:",
     }
 }
 
@@ -19,11 +19,12 @@ APPEND_SLASH = False
 
 # Отключаем кэширование для тестов
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    "default": {
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
     }
 }
 
 # Создаем папку static
 import os
-os.makedirs('static', exist_ok=True)
+
+os.makedirs("static", exist_ok=True)
