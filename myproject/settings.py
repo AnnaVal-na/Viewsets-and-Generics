@@ -96,11 +96,11 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "viewsets_generics_db",
-        "USER": "postgres",
-        "PASSWORD": "976431",
-        "HOST": "localhost",
-        "PORT": 5432,
+        "NAME": os.getenv("DB_NAME", "viewsets_generics_db"),
+        "USER": os.getenv("DB_USER", "postgres"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "976431"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", "5432"),
         "CONN_MAX_AGE": 600,
     }
 }

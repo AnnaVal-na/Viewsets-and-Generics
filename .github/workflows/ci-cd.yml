@@ -73,10 +73,9 @@ jobs:
         env:
           SECRET_KEY: test-secret-key-1234567890
           DEBUG: True
-          DB_ENGINE: django.db.backends.postgresql
           DB_NAME: test_db
           DB_USER: postgres
-          DB_PASSWORD: postgres
+          DB_PASSWORD: 976431
           DB_HOST: localhost
           DB_PORT: 5432
         run: |
