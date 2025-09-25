@@ -73,13 +73,11 @@ jobs:
         env:
           SECRET_KEY: test-secret-key-1234567890
           DEBUG: True
-          DB_NAME: test_db
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-          DB_HOST: localhost
-          DB_PORT: 5432
+          DB_ENGINE: django.db.backends.sqlite3
+          DB_NAME:
+            :memory:
         run: |
-          coverage run --source=. manage.py test --noinput --settings=test_settings --verbosity=2
+          coverage run --source=. manage.py test --noinput --verbosity=2
           coverage report -m
           coverage html
 
