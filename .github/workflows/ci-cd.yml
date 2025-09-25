@@ -60,7 +60,7 @@ jobs:
           DEBUG: True
           DB_NAME: test_db
         run: |
-          coverage run --source=. manage.py test --noinput --settings=test_settings --verbosity=2
+          coverage run --source=. manage.py test --noinput --settings=myproject.test_settings --verbosity=2
           coverage report -m
           coverage html
 
