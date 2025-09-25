@@ -15,10 +15,7 @@ def check_inactive_users():
     try:
         # Находим пользователей, которые не заходили более 30 дней
         month_ago = timezone.now() - timezone.timedelta(days=30)
-        inactive_users = User.objects.filter(
-            last_login__lt=month_ago,
-            is_active=True
-        )
+        inactive_users = User.objects.filter(last_login__lt=month_ago, is_active=True)
 
         # Блокируем неактивных пользователей
         count = inactive_users.update(is_active=False)
@@ -27,8 +24,8 @@ def check_inactive_users():
         if count > 0:
             try:
                 send_mail(
-                    subject='Отчет о блокировке неактивных пользователей',
-                    message=f'Было заблокировано {count} неактивных пользователей, которые не заходили более месяца.',
+                    subject="Отчет о блокировке неактивных пользователей",
+                    message=f"Было заблокировано {count} неактивных пользователей, которые не заходили более месяца.",
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[settings.ADMIN_EMAIL],
                     fail_silently=True,
@@ -52,7 +49,7 @@ def send_user_notification(user_id, message):
     try:
         user = User.objects.get(id=user_id)
         send_mail(
-            subject='Уведомление от образовательной платформы',
+            subject="Уведомление от образовательной платформы",
             message=message,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],

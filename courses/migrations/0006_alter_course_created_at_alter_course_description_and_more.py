@@ -7,32 +7,44 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0005_alter_course_description_alter_lesson_created_at_and_more'),
+        ("courses", "0005_alter_course_description_alter_lesson_created_at_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='course',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now, verbose_name='Дата создания'),
+            model_name="course",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default=django.utils.timezone.now,
+                verbose_name="Дата создания",
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='course',
-            name='description',
-            field=models.TextField(default=django.utils.timezone.now, verbose_name='Описание'),
+            model_name="course",
+            name="description",
+            field=models.TextField(
+                default=django.utils.timezone.now, verbose_name="Описание"
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='lesson',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now, verbose_name='Дата создания'),
+            model_name="lesson",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default=django.utils.timezone.now,
+                verbose_name="Дата создания",
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='lesson',
-            name='description',
-            field=models.TextField(default=django.utils.timezone.now, verbose_name='Описание'),
+            model_name="lesson",
+            name="description",
+            field=models.TextField(
+                default=django.utils.timezone.now, verbose_name="Описание"
+            ),
             preserve_default=False,
         ),
     ]
