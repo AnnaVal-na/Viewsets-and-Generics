@@ -1,19 +1,22 @@
 # LMS Platform - Django REST API
 
-Проект системы управления обучением (LMS) с использованием Django REST Framework, Celery, Redis и PostgreSQL.
+Система управления обучением (LMS) с использованием Django REST Framework, Celery, Redis, PostgreSQL и Docker.
 
 ## Production Server
 
 **Демо-версия доступна по адресу:** http://89.169.172.245
 
-## Быстрый запуск (Development)
+---
 
-### Предварительные требования
+## Быстрый запуск (локально)
+
+### Требования
 - Docker 20.10+
-- Docker Compose 2.0+
-- Python 3.12 (для разработки)
+- Docker Compose v2+
 
-### 1. Клонирование репозитория
+### Запуск
 ```bash
 git clone https://github.com/AnnaVal-na/Viewsets-and-Generics.git
 cd Viewsets-and-Generics
+cp .env.example .env  # отредактируйте под себя
+docker-compose up --build
