@@ -25,6 +25,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
     filterset_class = PaymentFilter
     ordering_fields = ["payment_date", "amount"]
     permission_classes = [permissions.IsAuthenticated]
+    queryset = Payment.objects.all()  # ← ДОБАВЬТЕ ЭТУ СТРОКУ
 
     def get_queryset(self):
         # Пользователь видит ТОЛЬКО свои платежи
