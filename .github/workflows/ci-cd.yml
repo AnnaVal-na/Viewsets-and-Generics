@@ -51,6 +51,7 @@ jobs:
         ports:
           - 5432:5432
 
+      # ДОБАВЬТЕ ЭТОТ БЛОК
       redis:
         image: redis:7-alpine
         options: >-
@@ -89,8 +90,6 @@ jobs:
           DB_HOST: localhost
           DB_PORT: 5432
           REDIS_URL: redis://localhost:6379/1
-          CELERY_BROKER_URL: redis://localhost:6379/0
-          CELERY_RESULT_BACKEND: redis://localhost:6379/0
         run: |
           coverage run --source=. manage.py test --noinput --verbosity=2
           coverage report -m
