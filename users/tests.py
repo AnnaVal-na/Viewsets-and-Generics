@@ -42,7 +42,7 @@ class PaymentModelTests(TestCase):
         self.user = CustomUser.objects.create_user(
             email="test@example.com", password="testpass123"
         )
-        # ✅ Добавлен owner
+
         self.course = Course.objects.create(title="Test Course", owner=self.user)
 
     def test_create_payment(self):
@@ -52,6 +52,7 @@ class PaymentModelTests(TestCase):
             paid_course=self.course,
             amount=10000,
             payment_method="transfer",
+            payment_status="pending",
         )
 
         self.assertEqual(payment.user, self.user)
@@ -127,13 +128,14 @@ class PaymentAPITests(APITestCase):
             email="other@example.com", password="otherpass123"
         )
 
-        # ✅ Добавлен owner
+
         self.course = Course.objects.create(title="Test Course", owner=self.user)
         self.payment = Payment.objects.create(
             user=self.user,
             paid_course=self.course,
             amount=10000,
             payment_method="transfer",
+            payment_status="pending",
         )
 
     def test_payment_list_authenticated(self):
@@ -152,6 +154,7 @@ class PaymentAPITests(APITestCase):
             "paid_course": self.course.id,
             "amount": 15000,
             "payment_method": "cash",
+            "payment_status": "pending",
         }
 
         response = self.client.post(url, data)

@@ -20,18 +20,15 @@ from courses.models import Course, Lesson
 
 
 class PaymentViewSet(viewsets.ModelViewSet):
-    queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_class = PaymentFilter
     ordering_fields = ["payment_date", "amount"]
+    permission_classes = [permissions.IsAuthenticated]
 
-    def get_permissions(self):
-        if self.action in ["update", "partial_update", "destroy"]:
-            self.permission_classes = [permissions.IsAuthenticated, IsOwner]
-        else:
-            self.permission_classes = [permissions.IsAuthenticated]
-        return [permission() for permission in self.permission_classes]
+    def get_queryset(self):
+        # Пользователь видит ТОЛЬКО свои платежи
+        return Payment.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -99,6 +96,7 @@ class CreatePaymentAPIView(APIView):
             paid_lesson_id=lesson_id,
             amount=amount,
             payment_method="stripe",
+            payment_status="pending",
         )
 
         try:
