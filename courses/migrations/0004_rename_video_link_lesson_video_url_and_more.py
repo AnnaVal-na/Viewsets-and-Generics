@@ -9,67 +9,83 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0003_auto_20250820_2104'),
+        ("courses", "0003_auto_20250820_2104"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='lesson',
-            old_name='video_link',
-            new_name='video_url',
+            model_name="lesson",
+            old_name="video_link",
+            new_name="video_url",
         ),
         migrations.RemoveField(
-            model_name='course',
-            name='preview',
+            model_name="course",
+            name="preview",
         ),
         migrations.RemoveField(
-            model_name='lesson',
-            name='preview',
+            model_name="lesson",
+            name="preview",
         ),
         migrations.AddField(
-            model_name='course',
-            name='created_at',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Дата создания'),
+            model_name="course",
+            name="created_at",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="Дата создания"
+            ),
         ),
         migrations.AddField(
-            model_name='course',
-            name='owner',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='Владелец'),
+            model_name="course",
+            name="owner",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="Владелец",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='lesson',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now, verbose_name='Дата создания'),
+            model_name="lesson",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default=django.utils.timezone.now,
+                verbose_name="Дата создания",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='lesson',
-            name='owner',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='Владелец'),
+            model_name="lesson",
+            name="owner",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="Владелец",
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='course',
-            name='description',
-            field=models.TextField(default=1, verbose_name='Описание'),
+            model_name="course",
+            name="description",
+            field=models.TextField(default=1, verbose_name="Описание"),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='course',
-            name='title',
-            field=models.CharField(max_length=200, verbose_name='Название'),
+            model_name="course",
+            name="title",
+            field=models.CharField(max_length=200, verbose_name="Название"),
         ),
         migrations.AlterField(
-            model_name='lesson',
-            name='description',
-            field=models.TextField(default=1, verbose_name='Описание'),
+            model_name="lesson",
+            name="description",
+            field=models.TextField(default=1, verbose_name="Описание"),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='lesson',
-            name='title',
-            field=models.CharField(max_length=200, verbose_name='Название'),
+            model_name="lesson",
+            name="title",
+            field=models.CharField(max_length=200, verbose_name="Название"),
         ),
     ]

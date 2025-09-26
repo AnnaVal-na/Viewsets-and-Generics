@@ -6,23 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0004_rename_video_link_lesson_video_url_and_more'),
+        ("courses", "0004_rename_video_link_lesson_video_url_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='course',
-            name='description',
-            field=models.TextField(blank=True, null=True, verbose_name='Описание'),
+            model_name="course",
+            name="description",
+            field=models.TextField(blank=True, null=True, verbose_name="Описание"),
         ),
         migrations.AlterField(
-            model_name='lesson',
-            name='created_at',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Дата создания'),
+            model_name="lesson",
+            name="created_at",
+            field=models.DateTimeField(
+                blank=True, null=True, verbose_name="Дата создания"
+            ),
         ),
         migrations.AlterField(
-            model_name='lesson',
-            name='description',
-            field=models.TextField(blank=True, null=True, verbose_name='Описание'),
+            model_name="lesson",
+            name="description",
+            field=models.TextField(blank=True, null=True, verbose_name="Описание"),
         ),
     ]
