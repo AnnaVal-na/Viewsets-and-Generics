@@ -42,7 +42,8 @@ class PaymentModelTests(TestCase):
         self.user = CustomUser.objects.create_user(
             email="test@example.com", password="testpass123"
         )
-        self.course = Course.objects.create(title="Test Course")
+        # ✅ Добавлен owner
+        self.course = Course.objects.create(title="Test Course", owner=self.user)
 
     def test_create_payment(self):
         """Тест создания платежа"""
@@ -126,7 +127,8 @@ class PaymentAPITests(APITestCase):
             email="other@example.com", password="otherpass123"
         )
 
-        self.course = Course.objects.create(title="Test Course")
+        # ✅ Добавлен owner
+        self.course = Course.objects.create(title="Test Course", owner=self.user)
         self.payment = Payment.objects.create(
             user=self.user,
             paid_course=self.course,
