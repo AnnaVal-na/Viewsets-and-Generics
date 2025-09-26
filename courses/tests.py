@@ -13,39 +13,34 @@ class CourseLessonTestCase(APITestCase):
     def setUp(self):
         # Создаем пользователей
         self.user = User.objects.create_user(
-            email='testuser@example.com',
-            password='testpass123'
+            email="testuser@example.com", password="testpass123"
         )
 
         # Создаем модератора (is_staff=True)
         self.moderator = User.objects.create_user(
-            email='moderator@example.com',
-            password='modpass123',
-            is_staff=True
+            email="moderator@example.com", password="modpass123", is_staff=True
         )
 
         # Создаем администратора
         self.admin = User.objects.create_user(
-            email='admin@example.com',
-            password='adminpass123',
+            email="admin@example.com",
+            password="adminpass123",
             is_staff=True,
-            is_superuser=True
+            is_superuser=True,
         )
 
         # Создаем курс
         self.course = Course.objects.create(
-            title='Test Course',
-            description='Test Description',
-            owner=self.user
+            title="Test Course", description="Test Description", owner=self.user
         )
 
         # Создаем урок
         self.lesson = Lesson.objects.create(
-            title='Test Lesson',
-            description='Test Lesson Description',
+            title="Test Lesson",
+            description="Test Lesson Description",
             course=self.course,
             owner=self.user,
-            video_url='https://www.youtube.com/watch?v=test123'
+            video_url="https://www.youtube.com/watch?v=test123",
         )
 
     def test_lesson_youtube_validation(self):
@@ -54,52 +49,37 @@ class CourseLessonTestCase(APITestCase):
 
         # Пытаемся создать урок с невалидной ссылкой
         data = {
-            'title': 'Invalid URL Lesson',
-            'description': 'Test',
-            'course': self.course.id,
-            'video_url': 'https://vk.com/video123'
+            "title": "Invalid URL Lesson",
+            "description": "Test",
+            "course": self.course.id,
+            "video_url": "https://vk.com/video123",
         }
 
-        response = self.client.post(
-            reverse('lesson-list'),
-            data=data
-        )
+        response = self.client.post(reverse("lesson-list"), data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('video_url', response.data)
+        self.assertIn("video_url", response.data)
 
     def test_subscription_flow(self):
         """Тестируем работу подписок"""
         self.client.force_authenticate(user=self.user)
 
         # Добавляем подписку
-        response = self.client.post(
-            reverse('subscribe'),
-            {'course_id': self.course.id}
-        )
+        response = self.client.post(reverse("subscribe"), {"course_id": self.course.id})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['message'], 'Подписка добавлена')
+        self.assertEqual(response.data["message"], "Подписка добавлена")
         self.assertTrue(
-            Subscription.objects.filter(
-                user=self.user,
-                course=self.course
-            ).exists()
+            Subscription.objects.filter(user=self.user, course=self.course).exists()
         )
 
         # Удаляем подписку
-        response = self.client.post(
-            reverse('subscribe'),
-            {'course_id': self.course.id}
-        )
+        response = self.client.post(reverse("subscribe"), {"course_id": self.course.id})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['message'], 'Подписка удалена')
+        self.assertEqual(response.data["message"], "Подписка удалена")
         self.assertFalse(
-            Subscription.objects.filter(
-                user=self.user,
-                course=self.course
-            ).exists()
+            Subscription.objects.filter(user=self.user, course=self.course).exists()
         )
 
     def test_course_list_pagination(self):
@@ -109,36 +89,31 @@ class CourseLessonTestCase(APITestCase):
         # Создаем несколько курсов для тестирования пагинации
         for i in range(15):
             Course.objects.create(
-                title=f'Course {i}',
-                description=f'Description {i}',
-                owner=self.user
+                title=f"Course {i}", description=f"Description {i}", owner=self.user
             )
 
-        response = self.client.get(
-            reverse('course-list') + '?page=2&page_size=5'
-        )
+        response = self.client.get(reverse("course-list") + "?page=2&page_size=5")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('results', response.data)
-        self.assertEqual(len(response.data['results']), 5)
+        self.assertIn("results", response.data)
+        self.assertEqual(len(response.data["results"]), 5)
 
     def test_lesson_crud_permissions(self):
         """Тестируем права доступа для уроков"""
         # Анонимный пользователь не может просматривать
-        response = self.client.get(reverse('lesson-list'))
+        response = self.client.get(reverse("lesson-list"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
         # Обычный пользователь может просматривать
         self.client.force_authenticate(user=self.user)
-        response = self.client.get(reverse('lesson-list'))
+        response = self.client.get(reverse("lesson-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # Модератор (is_staff) может редактировать
         self.client.force_authenticate(user=self.moderator)
-        data = {'title': 'Updated Lesson'}
+        data = {"title": "Updated Lesson"}
         response = self.client.patch(
-            reverse('lesson-detail', args=[self.lesson.id]),
-            data=data
+            reverse("lesson-detail", args=[self.lesson.id]), data=data
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -146,30 +121,21 @@ class CourseLessonTestCase(APITestCase):
 class SubscriptionTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
-            email='user@example.com',
-            password='testpass123'
+            email="user@example.com", password="testpass123"
         )
         self.course = Course.objects.create(
-            title='Test Course',
-            description='Test Description',
-            owner=self.user
+            title="Test Course", description="Test Description", owner=self.user
         )
 
     def test_subscription_creation(self):
         """Тестируем создание подписки"""
         self.client.force_authenticate(user=self.user)
 
-        response = self.client.post(
-            reverse('subscribe'),
-            {'course_id': self.course.id}
-        )
+        response = self.client.post(reverse("subscribe"), {"course_id": self.course.id})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(
-            Subscription.objects.filter(
-                user=self.user,
-                course=self.course
-            ).exists()
+            Subscription.objects.filter(user=self.user, course=self.course).exists()
         )
 
     def test_subscription_unique(self):
@@ -177,21 +143,12 @@ class SubscriptionTestCase(APITestCase):
         self.client.force_authenticate(user=self.user)
 
         # Первая подписка
-        self.client.post(
-            reverse('subscribe'),
-            {'course_id': self.course.id}
-        )
+        self.client.post(reverse("subscribe"), {"course_id": self.course.id})
 
         # Вторая попытка подписаться - должна удалить подписку
-        response = self.client.post(
-            reverse('subscribe'),
-            {'course_id': self.course.id}
-        )
+        response = self.client.post(reverse("subscribe"), {"course_id": self.course.id})
 
-        self.assertEqual(response.data['message'], 'Подписка удалена')
+        self.assertEqual(response.data["message"], "Подписка удалена")
         self.assertFalse(
-            Subscription.objects.filter(
-                user=self.user,
-                course=self.course
-            ).exists()
+            Subscription.objects.filter(user=self.user, course=self.course).exists()
         )

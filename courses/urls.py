@@ -4,11 +4,11 @@ from .views import CourseViewSet, LessonViewSet, SubscriptionAPIView
 
 # Создаём роутер
 router = DefaultRouter()
-router.register(r'courses', CourseViewSet)
-router.register(r'lessons', LessonViewSet)
+router.register(r"courses", CourseViewSet)
+router.register(r"lessons", LessonViewSet)
 
 # Все маршруты берутся из роутера
 urlpatterns = [
-    path('', include(router.urls)),
-    path('subscribe/', SubscriptionAPIView.as_view(), name='subscribe'),
+    path("", include(router.urls)),
+    path("subscribe/", SubscriptionAPIView.as_view(), name="subscribe"),
 ]
