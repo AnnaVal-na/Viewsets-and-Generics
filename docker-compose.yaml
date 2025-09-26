@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # PostgreSQL база данных
   db:
-    image: postgres:13-alpine
+    image: postgres:15-alpine
     container_name: lms_db
     env_file:
       - .env
