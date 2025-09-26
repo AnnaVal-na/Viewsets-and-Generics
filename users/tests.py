@@ -128,7 +128,6 @@ class PaymentAPITests(APITestCase):
             email="other@example.com", password="otherpass123"
         )
 
-
         self.course = Course.objects.create(title="Test Course", owner=self.user)
         self.payment = Payment.objects.create(
             user=self.user,
