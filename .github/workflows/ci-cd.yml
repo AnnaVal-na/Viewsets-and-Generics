@@ -51,7 +51,6 @@ jobs:
         ports:
           - 5432:5432
 
-      # ДОБАВЬТЕ ЭТОТ БЛОК
       redis:
         image: redis:7-alpine
         options: >-
@@ -71,7 +70,12 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y redis-tools
+
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -79,6 +83,22 @@ jobs:
 
       - name: Create static directory
         run: mkdir -p static
+
+      - name: Wait for Redis and PostgreSQL to be ready
+        run: |
+          # Ждём PostgreSQL
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U postgres && break
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+
+          # Ждём Redis
+          for i in {1..30}; do
+            redis-cli -h localhost ping && break
+            echo "Waiting for Redis..."
+            sleep 2
+          done
 
       - name: Run tests with coverage
         env:
