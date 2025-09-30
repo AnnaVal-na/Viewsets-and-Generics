@@ -127,12 +127,12 @@ jobs:
 
       - name: Install Docker Compose
         run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
+          sudo apt-get update
+          sudo apt-get install -y docker-compose-plugin
 
       - name: Build Docker images
         run: |
-          docker-compose -f docker-compose.yaml build
+          docker compose -f docker-compose.yaml build
 
   deploy:
     runs-on: ubuntu-latest
@@ -146,8 +146,8 @@ jobs:
 
       - name: Install Docker Compose
         run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
+          sudo apt-get update
+          sudo apt-get install -y docker-compose-plugin
 
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.0.3
@@ -171,19 +171,19 @@ jobs:
             git reset --hard FETCH_HEAD
 
             # Останавливаем старые контейнеры
-            docker-compose down 2>/dev/null || true
+            docker compose down 2>/dev/null || true
 
             # Запускаем новые
-            docker-compose up -d --build
+            docker compose up -d --build
 
             # Ждём запуска
             sleep 20
 
             # Выполняем миграции и сбор статики
-            docker-compose exec -T web python manage.py migrate --noinput
-            docker-compose exec -T web python manage.py collectstatic --noinput
-            docker-compose exec -T web python manage.py create_admin_user || true
+            docker compose exec -T web python manage.py migrate --noinput
+            docker compose exec -T web python manage.py collectstatic --noinput
+            docker compose exec -T web python manage.py create_admin_user || true
 
             # Проверка
             echo "Deployment completed!"
-            docker-compose ps
+            docker compose ps
