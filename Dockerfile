@@ -1,7 +1,7 @@
-# Многостадийный Dockerfile для Django приложения
-FROM python:3.12-slim as builder
+# Используем многостадийную сборку
+FROM python:3.12-slim AS builder
 
-# Устанавливаем зависимости системы для сборки
+# Устанавливаем зависимости для сборки
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
@@ -9,45 +9,43 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Устанавливаем зависимости Python
+# Копируем requirements и устанавливаем зависимости
 COPY requirements.txt .
 RUN pip install --user --no-cache-dir -r requirements.txt
+
 
 # Финальный образ
 FROM python:3.12-slim
 
-# Устанавливаем системные зависимости для runtime
+# Устанавливаем runtime-зависимости
 RUN apt-get update && apt-get install -y \
     libpq5 \
     curl \
-    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Создаем пользователя для безопасности
+# Создаем пользователя
 RUN useradd --create-home --shell /bin/bash app
 WORKDIR /home/app
 
-# Копируем установленные зависимости из стадии builder
+# Копируем зависимости из builder
 COPY --from=builder /root/.local /home/app/.local
+
+# Копируем код (без .git, __pycache__ и т.д.)
 COPY --chown=app:app . .
+
+# Устанавливаем права
+RUN mkdir -p /home/app/staticfiles /home/app/media
+RUN chown -R app:app /home/app
 
 # Настраиваем пути
 ENV PATH=/home/app/.local/bin:$PATH
 ENV PYTHONPATH=/home/app
 
-# Создаем директории для статики и медиа
-RUN mkdir -p /home/app/staticfiles /home/app/media
-RUN chown -R app:app /home/app/
-
-# Переключаемся на пользователя app
 USER app
 
-# Открываем порт
 EXPOSE 8000
 
-# Healthcheck через curl (без зависимости от Python-библиотек)
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health/ || exit 1
 
-# Команда запуска
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "myproject.wsgi:application"]
