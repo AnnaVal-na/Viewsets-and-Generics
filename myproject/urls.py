@@ -21,7 +21,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path('', RootView.as_view(), name='root'),
+    path("", RootView.as_view(), name="root"),
     path("admin/", admin.site.urls),
     path("api/", include("users.urls")),
     path("api/", include("courses.urls")),
