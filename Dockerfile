@@ -1,36 +1,51 @@
-# Используем официальный slim-образ Python 3.12
-FROM python:3.12-slim
+# Используем многостадийную сборку
+FROM python:3.12-slim AS builder
 
-# Устанавливаем рабочую директорию в контейнере
-WORKDIR /app
-
-# Устанавливаем зависимости системы
+# Устанавливаем зависимости для сборки
 RUN apt-get update && apt-get install -y \
     gcc \
+    g++ \
+    python3-dev \
     libpq-dev \
-    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Копируем файл зависимостей в контейнер
-COPY requirements.txt ./
+# Копируем requirements и устанавливаем зависимости
+COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
 
-# Устанавливаем зависимости Python
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем исходный код приложения в контейнер
-COPY . .
+# Финальный образ
+FROM python:3.12-slim
 
-# Определяем переменные окружения
-ENV SECRET_KEY='django-insecure-_kyn1v9=0m$416bqpo!+!4jxz6gx_)%7z6)9-1v3!&f9dep^q6'
-ENV CELERY_BROKER_URL="redis://redis:6379/0"
-ENV CELERY_BACKEND="redis://redis:6379/0"
+# Устанавливаем runtime-зависимости
+RUN apt-get update && apt-get install -y \
+    libpq5 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Создаем директорию для медиафайлов
-RUN mkdir -p /app/media
+# Создаем пользователя
+RUN useradd --create-home --shell /bin/bash app
+WORKDIR /home/app
 
-# Пробрасываем порт, который будет использовать Django
+# Копируем зависимости из builder
+COPY --from=builder /root/.local /home/app/.local
+
+# Копируем код (без .git, __pycache__ и т.д.)
+COPY --chown=app:app . .
+
+# Устанавливаем права
+RUN mkdir -p /home/app/staticfiles /home/app/media
+RUN chown -R app:app /home/app
+
+# Настраиваем пути
+ENV PATH=/home/app/.local/bin:$PATH
+ENV PYTHONPATH=/home/app
+
+USER app
+
 EXPOSE 8000
 
-# Команда для запуска приложения
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health/ || exit 1
 
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "myproject.wsgi:application"]

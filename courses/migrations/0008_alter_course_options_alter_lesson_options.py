@@ -6,16 +6,24 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('courses', '0007_subscription'),
+        ("courses", "0007_subscription"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='course',
-            options={'ordering': ['id'], 'verbose_name': 'Курс', 'verbose_name_plural': 'Курсы'},
+            name="course",
+            options={
+                "ordering": ["id"],
+                "verbose_name": "Курс",
+                "verbose_name_plural": "Курсы",
+            },
         ),
         migrations.AlterModelOptions(
-            name='lesson',
-            options={'ordering': ['id'], 'verbose_name': 'Урок', 'verbose_name_plural': 'Уроки'},
+            name="lesson",
+            options={
+                "ordering": ["id"],
+                "verbose_name": "Урок",
+                "verbose_name_plural": "Уроки",
+            },
         ),
     ]
