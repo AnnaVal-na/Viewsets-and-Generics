@@ -6,38 +6,63 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0004_payment'),
+        ("users", "0004_payment"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='payment',
-            name='payment_status',
-            field=models.CharField(choices=[('pending', 'Ожидает оплаты'), ('paid', 'Оплачено'), ('failed', 'Ошибка оплаты')], default='pending', max_length=20, verbose_name='Статус оплаты'),
+            model_name="payment",
+            name="payment_status",
+            field=models.CharField(
+                choices=[
+                    ("pending", "Ожидает оплаты"),
+                    ("paid", "Оплачено"),
+                    ("failed", "Ошибка оплаты"),
+                ],
+                default="pending",
+                max_length=20,
+                verbose_name="Статус оплаты",
+            ),
         ),
         migrations.AddField(
-            model_name='payment',
-            name='payment_url',
-            field=models.URLField(blank=True, null=True, verbose_name='Ссылка для оплаты'),
+            model_name="payment",
+            name="payment_url",
+            field=models.URLField(
+                blank=True, null=True, verbose_name="Ссылка для оплаты"
+            ),
         ),
         migrations.AddField(
-            model_name='payment',
-            name='stripe_price_id',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Stripe Price ID'),
+            model_name="payment",
+            name="stripe_price_id",
+            field=models.CharField(
+                blank=True, max_length=100, null=True, verbose_name="Stripe Price ID"
+            ),
         ),
         migrations.AddField(
-            model_name='payment',
-            name='stripe_product_id',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Stripe Product ID'),
+            model_name="payment",
+            name="stripe_product_id",
+            field=models.CharField(
+                blank=True, max_length=100, null=True, verbose_name="Stripe Product ID"
+            ),
         ),
         migrations.AddField(
-            model_name='payment',
-            name='stripe_session_id',
-            field=models.CharField(blank=True, max_length=100, null=True, verbose_name='Stripe Session ID'),
+            model_name="payment",
+            name="stripe_session_id",
+            field=models.CharField(
+                blank=True, max_length=100, null=True, verbose_name="Stripe Session ID"
+            ),
         ),
         migrations.AlterField(
-            model_name='payment',
-            name='payment_method',
-            field=models.CharField(choices=[('cash', 'Наличные'), ('transfer', 'Перевод на счёт'), ('stripe', 'Stripe')], max_length=20, verbose_name='Способ оплаты'),
+            model_name="payment",
+            name="payment_method",
+            field=models.CharField(
+                choices=[
+                    ("cash", "Наличные"),
+                    ("transfer", "Перевод на счёт"),
+                    ("stripe", "Stripe"),
+                ],
+                max_length=20,
+                verbose_name="Способ оплаты",
+            ),
         ),
     ]

@@ -1,206 +1,205 @@
-# Educational Platform API
+# LMS Platform — Django REST API
 
-Django REST Framework API для образовательной платформы с курсами, уроками и системой платежей.
+[![Django](https://img.shields.io/badge/Django-4.2-green)](https://www.djangoproject.com/)
+[![DRF](https://img.shields.io/badge/DRF-3.14-blue)](https://www.django-rest-framework.org/)
+[![Docker](https://img.shields.io/badge/Docker-✓-blue)](https://www.docker.com/)
+[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-orange)](https://github.com/features/actions)
 
-## Описание
+Система управления обучением (LMS) на базе Django REST Framework, с поддержкой асинхронных задач через Celery, хранением данных в PostgreSQL, кэшированием и брокером сообщений через Redis, и контейнеризацией через Docker.
 
-RESTful API для управления образовательным контентом с расширенной системой прав доступа, 
-JWT-авторизацией, системой подписок, интеграцией с Stripe и возможностью фильтрации и сортировки данных.
+---
 
-## Основные функции
+## Production Server
 
--  JWT-авторизация — безопасный доступ к API
--  Ролевая модель — пользователи, модераторы, администраторы
--  Права доступа — владельцы могут управлять только своим контентом
--  CRUD-операции — полный набор для курсов, уроков, пользователей и платежей
--  Фильтрация и сортировка — удобный поиск и упорядочивание данных
--  Платежная система — интеграция с Stripe для оплаты курсов и уроков
--  Система подписок — подписка на обновления курсов
--  Валидация контента — проверка YouTube-ссылок в материалах
--  Пагинация — постраничный вывод данных
--  Документация API — автоматическая генерация Swagger/Redoc
+Демо-версия РАБОТАЕТ по адресу: http://89.169.172.245
 
-##  Установка и запуск
+Доступные endpoints:
+- API Root: http://89.169.172.245/api/
+- Admin Panel: http://89.169.172.245/admin/
+- Swagger Docs: http://89.169.172.245/swagger/
+- Redoc Docs: http://89.169.172.245/redoc/
+
+> Примечание: Виртуальная машина включена для проверки. Для экономии средств может быть временно выключена.
+
+---
+
+## Быстрый запуск (локально)
+
+### Предварительные требования
+- Docker 20.10+
+- Docker Compose v2+
+- Python 3.12 (для локальной разработки)
 
 ### 1. Клонирование репозитория
-```
-git clone <URL вашего репозитория>
+```bash
+git clone https://github.com/AnnaVal-na/Viewsets-and-Generics.git
 cd Viewsets-and-Generics
-```
 
-### 2. Создание виртуального окружения
-- Linux/macOS:
-```
-python -m venv venv
-source venv/bin/activate
-```
-- Windows ( CMD ):
-```
-python -m venv venv
-venv\Scripts\activate.bat
-```
-- Windows ( PowerShell ):
-```
-python -m venv venv
-venv\Scripts\Activate.ps1
-```
+# Копируем пример env файла
+cp .env.example .env
 
-### 3. Установка зависимостей
-```
+# Редактируем .env файл
+nano .env  # или используйте любой текстовый редактор
+
+# Database
+DB_NAME=lms_db
+DB_USER=postgres
+DB_PASSWORD=secure_password_123
+DB_HOST=db
+DB_PORT=5432
+
+# Django
+SECRET_KEY=your-secret-key-change-in-production
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+
+# Redis
+REDIS_URL=redis://redis:6379/0
+
+# Celery
+CELERY_BROKER_URL=redis://redis:6379/0
+CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+### Email
+EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+
+# Сборка и запуск контейнеров
+docker-compose up --build -d
+
+# Просмотр логов
+docker-compose logs -f
+
+# Проверка статуса контейнеров
+docker-compose ps
+
+
+# Применение миграций
+docker-compose exec web python manage.py migrate
+
+# Сбор статических файлов
+docker-compose exec web python manage.py collectstatic --noinput
+
+# Создание суперпользователя (опционально)
+docker-compose exec web python manage.py createsuperuser
+
+### Доступ к приложению
+- Приложение: http://localhost
+- API: http://localhost/api/
+- Admin: http://localhost/admin/
+- Документация: http://localhost/swagger/
+
+Локальная разработка (без Docker)
+
+Установка зависимостей
+```bash
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 4. Настройка базы данных
-Создайте файл .env в корне проекта и заполните необходимые параметры:
+### Настройка базы данных
+```bash
+# Создание БД PostgreSQL
+createdb lms_db
 
-```dotenv
-DB_NAME=your_database_name
-DB_USER=your_database_user
-DB_PASSWORD=your_database_password
-DB_HOST=localhost
-DB_PORT=5432
-SECRET_KEY=your_secret_key
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
-STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
+# Или используйте SQLite (измените DATABASES в settings.py)
 ```
 
-### 5. Применение миграций
-```
-python manage.py makemigrations
+Запуск сервера
+```bash
 python manage.py migrate
-```
-
-### 6. Создание суперпользователя
-```
-python manage.py createsuperuser
-```
-
-### 7. Запуск сервера
-```
 python manage.py runserver
 ```
 
-## API Endpoints
+Развертывание на сервере (Yandex Cloud)
 
-Аутентификация
-```
-POST /api/token/           - Получение JWT токена
-POST /api/token/refresh/    - Обновление токена
-POST /api/register/         - Регистрация нового пользователя
-```
-
-Пользователи
-```
-GET  /api/users/                 - Список пользователей (требует авторизации)
-GET  /api/users/{id}/             - Детали пользователя
-PUT  /api/users/{id}/update/      - Обновление пользователя
-DELETE /api/users/{id}/delete/    - Удаление пользователя
-```
-
-Курсы
-```
-GET  /api/courses/              - Список курсов с пагинацией
-POST /api/courses/              - Создание курса (требует авторизации)
-GET  /api/courses/{id}/          - Детали курса с информацией о подписке
-PUT  /api/courses/{id}/          - Обновление курса
-DELETE /api/courses/{id}/        - Удаление курса
-```
-
-Уроки
-```
-GET  /api/lessons/              - Список уроков с пагинацией
-POST /api/lessons/              - Создание урока (требуется авторизация, валидация YouTube-ссылок)
-GET  /api/lessons/{id}/          - Детали урока
-PUT  /api/lessons/{id}/          - Обновление урока
-DELETE /api/lessons/{id}/        - Удаление урока
-```
-
-Подписки
-```
-POST /api/subscribe/             - Управление подпиской на курс
-```
-
-Платежи
-```
-GET  /api/payments/              - Список платежей (требует авторизации)
-POST /api/payment/create/        - Создание платежной сессии Stripe
-GET  /api/payment/{payment_id}/status/ - Проверка статуса платежа
-```
-
-Документация
-```
-GET /swagger/                   - Интерактивная документация Swagger
-GET /redoc/                     - Документация Redoc
-```
-Структура проекта:
-- courses/
-- models.py: Course, Lesson, Subscription
-- serializers.py: валидация и преобразование данных
-- views.py: ViewSets/APIViews
-- validators.py: валидатор YouTube-ссылок (если нужен)
-- paginators.py: настройки пагинации
-- tests.py: тесты
-- users/
-- models.py: CustomUser, Payment
-- views.py: ViewSets
-- services.py: сервисы Stripe
-- permissions.py: кастомные permissions
-- myproject/: настройки проекта
-- requirements.txt: зависимости
-
-## Запуск через Docker Compose
-
-### 1. Клонирование и настройка
+1. Подготовка сервера
 ```bash
-git clone <your-repo-url>
+# Обновление системы
+sudo apt update && sudo apt upgrade -y
+
+# Установка Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# Установка Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+```
+
+2. Настройка проекта на сервере
+```bash
+# Клонирование проекта
+git clone https://github.com/AnnaVal-na/Viewsets-and-Generics.git
 cd Viewsets-and-Generics
-cp .env.example .env
 
-## Проверка работоспособности:
+# Создание .env файла
+nano .env  # заполнить настройки для продакшена
 
-1. Django: http://localhost:8000
-2. База данных: 
-   ```bash
-   docker-compose exec db psql -U postgres -d viewsets_generics_db
+# Установка прав (если размещаете в /var/www)
+sudo chown -R $USER:$USER /var/www/myapp
+chmod -R 755 /var/www/myapp
 
-Redis:
-bash
-docker-compose exec redis redis-cli ping
-Celery:
+3. Запуск в продакшн режиме
+- Остановка старых контейнеров: docker-compose down
+- Запуск новых контейнеров: docker-compose up -d --build
+- Проверка статуса: docker-compose ps
 
-bash
-docker-compose logs celery
-text
+CI/CD Pipeline
+- Проект использует GitHub Actions для автоматизации
+- Workflow файл: .github/workflows/ci-cd.yml
+- Этапы pipeline:
+  - Lint — проверка кода (flake8, black)
+  - Test — запуск тестов с PostgreSQL
+  - Build — сборка Docker образов
+  - Deploy — автоматический деплой на сервер
+- Триггеры:
+  - push в ветки: main, develop, final_assignment_fixed
+  - pull_request в: main, develop
+- Настройка секретов в GitHub:
+  - SERVER_IP — IP адрес сервера
+  - SSH_USER — пользователь для SSH
+  - SSH_PRIVATE_KEY — приватный ключ для доступа
 
-## Деплой на продакшен сервер
+API Endpoints
+- Аутентификация
+  - POST /api/register/ — регистрация пользователя
+  - POST /api/token/ — получение JWT токена
+- Пользователи
+  - GET /api/users/ — список пользователей (требует аутентификации)
+  - GET /api/users/{id}/ — детали пользователя
+  - PATCH /api/users/{id}/update/ — обновление пользователя
+  - DELETE /api/users/{id}/delete/ — удаление пользователя
+- Платежи
+  - GET /api/payments/ — список платежей
+  - POST /api/payments/ — создание платежа
+  - POST /api/payment/create/ — создание платежа через Stripe
+  - GET /api/payment/{payment_id}/status/ — проверка статуса платежа
+- Курсы и уроки
+  - GET /api/courses/ — список курсов
+  - GET /api/lessons/ — список уроков
 
-### Требования к серверу:
-- Ubuntu 20.04+
-- Python 3.9+
-- PostgreSQL
-- Redis
-- Nginx
-- Gunicorn
+## Тестирование
+- Запуск всех тестов: docker-compose exec web python manage.py test
+- Запуск с покрытием:
+  - docker-compose exec web coverage run manage.py test
+  - docker-compose exec web coverage report
 
-### 
-CI_CD_GitHub_Actions
-### Настройка сервера:
+4. Запуск конкретного приложения
+- docker-compose exec web python manage.py test users
+- docker-compose exec web python manage.py test courses
 
-1. Подключитесь к серверу по SSH
-2. Выполните команды настройки:
-```bash
-# Установите необходимые пакеты
-sudo apt update && sudo apt install -y python3-pip python3-venv nginx postgresql redis-server
+## Безопасность
+- JWT аутентификация
+- CORS настройки
+- Environment variables для чувствительных данных
+- Хеширование паролей
 
-# Настройте базу данных
-sudo -u postgres psql
-CREATE DATABASE myapp_db;
-CREATE USER myapp_user WITH PASSWORD 'your_password';
-GRANT ALL PRIVILEGES ON DATABASE myapp_db TO myapp_user;
+## Поддержка
+При возникновении проблем:
+- Проверьте логи: docker-compose logs
+- Убедитесь, что все контейнеры запущены: docker-compose ps
+- Проверьте настройки .env файла
 
-## Server Setup
-
-1. Install dependencies:
-```bash
-sudo apt update
-sudo apt install nginx postgresql python3-pip
+## Лицензия
+MIT License

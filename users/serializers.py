@@ -1,19 +1,14 @@
 from rest_framework import serializers
-from .models import Payment, CustomUser
+from django.contrib.auth import get_user_model
+from .models import Payment
+
+CustomUser = get_user_model()
 
 
-class PaymentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Payment
-        fields = '__all__'
-
-
-# ДОБАВЛЕНЫ НОВЫЕ КЛАССЫ:
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'email', 'phone', 'city', 'avatar']
-        read_only_fields = ['id']
+        fields = ["id", "email", "phone", "city", "avatar"]
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -21,13 +16,21 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'password', 'phone', 'city']
+        fields = ["email", "password", "phone", "city"]
 
     def create(self, validated_data):
-        user = CustomUser.objects.create_user(
-            email=validated_data['email'],
-            password=validated_data['password'],
-            phone=validated_data.get('phone'),
-            city=validated_data.get('city')
-        )
+        user = CustomUser.objects.create_user(**validated_data)
         return user
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = "__all__"
+        read_only_fields = (
+            "user",
+            "stripe_product_id",
+            "stripe_price_id",
+            "stripe_session_id",
+            "payment_url",
+        )

@@ -14,15 +14,15 @@ def send_course_update_email(course_id, update_message):
         subscriptions = Subscription.objects.filter(course=course)
 
         for subscription in subscriptions:
-            subject = f'Обновление курса: {course.title}'
-            message = f'''
+            subject = f"Обновление курса: {course.title}"
+            message = f"""
             Здравствуйте, {subscription.user.email}!
 
             Курс "{course.title}" был обновлен:
             {update_message}
 
             Перейти к курсу: http://localhost:8000/api/courses/{course.id}/
-            '''
+            """
 
             send_mail(
                 subject=subject,
